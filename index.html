@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ДРИМРУМС // библиотека лиминальных пространств</title>
+<meta name="description" content="Запретная библиотека на Уровне 0: Ангельская, Демоническая и Кровавая книги. Чтобы увидеть записи, попросите разрешение у владельца книги.">
+<meta name="theme-color" content="#0c0a06">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c0a06'/%3E%3Crect x='6' y='6' width='20' height='20' fill='none' stroke='%23c8b25f' stroke-width='2'/%3E%3Crect x='13' y='12' width='6' height='8' fill='%23c8b25f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Neucha&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ================= ТОКЕНЫ ================= */
+:root {
+  color-scheme: dark;
+  --font-mono-vhs: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --font-display-pixel: 'Press Start 2P', var(--font-mono-vhs);
+  --font-hand-dream: 'Neucha', 'Comic Sans MS', cursive;
+
+  /* BACKROOMS PALETTE */
+  --br-wall: #c8b25f;
+  --br-wall-dark: #a08c3f;
+  --br-wall-shadow: #6e5f2a;
+  --br-carpet: #8a7a3d;
+  --br-light: #fff9db;
+  --br-ink: #171208;
+  /* DREAMCORE PASTELS */
+  --dc-pink: #f4c9e4;
+  --dc-cream: #fdf3e0;
+  /* DANGER */
+  --danger: #d90429;
+
+  --bg: #0c0a06;
+  --fg: #e9e2c8;
+  --muted: #a3966b;
+  --dim: #8a7d55;
+  --faint: #6e5f2a;
+  --panel: #14110a;
+  --line: rgba(200, 178, 95, 0.25);
+
+  /* Точка схода коридора */
+  --vp-x1: 37; --vp-y1: 33; --vp-x2: 63; --vp-y2: 67;
+}
+
+/* ================= БАЗА ================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono-vhs);
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input, select, textarea { font: inherit; }
+ul, ol { list-style: none; }
+::selection { background: var(--br-wall); color: var(--br-ink); }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #0c0a06; }
+::-webkit-scrollbar-thumb { background: var(--br-wall-dark); border: 2px solid #0c0a06; }
+::-webkit-scrollbar-thumb:hover { background: var(--br-wall); }
+:focus-visible { outline: 2px solid var(--br-wall); outline-offset: 2px; }
+body.preloading, body.modal-open { overflow: hidden; }
+
+.wrap { max-width: 64rem; margin-inline: auto; }
+.f-pixel { font-family: var(--font-display-pixel); }
+.f-hand { font-family: var(--font-hand-dream); }
+
+/* Иконки (лусайд-подобные SVG-символы) */
+.ic {
+  width: 1em; height: 1em;
+  fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
+  display: inline-block; vertical-align: -0.125em;
+}
+.i10 { width: 10px; height: 10px; }
+.i14 { width: 14px; height: 14px; }
+.i16 { width: 16px; height: 16px; }
+.i20 { width: 20px; height: 20px; }
+.i36 { width: 36px; height: 36px; }
+.i40 { width: 40px; height: 40px; }
+
+.hide-sm { display: none; }
+.hide-md { display: none; }
+
+/* ================= ТЕКСТУРЫ ================= */
+/* Жёлтые обои бекрумс */
+.br-wallpaper {
+  background-color: var(--br-wall);
+  background-image:
+    radial-gradient(circle at 50% 45%, rgba(255, 249, 219, 0.14) 0 6%, transparent 7%),
+    radial-gradient(circle at 50% 55%, rgba(110, 95, 42, 0.13) 0 6%, transparent 7%),
+    repeating-linear-gradient(90deg, rgba(110, 95, 42, 0.12) 0 2px, transparent 2px 56px),
+    repeating-linear-gradient(0deg, rgba(110, 95, 42, 0.07) 0 1px, transparent 1px 28px);
+  background-size: 56px 112px, 56px 112px, 56px 112px, 56px 112px;
+}
+/* Влажный ковёр */
+.br-carpet {
+  background-color: var(--br-carpet);
+  background-image:
+    radial-gradient(circle at 30% 30%, rgba(23, 18, 8, 0.25) 0 12%, transparent 13%),
+    radial-gradient(circle at 70% 60%, rgba(255, 249, 219, 0.12) 0 10%, transparent 11%),
+    radial-gradient(circle at 50% 80%, rgba(23, 18, 8, 0.3) 0 14%, transparent 15%);
+  background-size: 26px 26px, 34px 34px, 42px 42px;
+}
+
+/* Зерно плёнки */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -100%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.9s steps(4) infinite;
+}
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); }
+  75% { transform: translate(-2%, -2%); }
+  100% { transform: translate(3%, 3%); }
+}
+
+/* CRT сканлайны */
+.scanlines::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 91;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+
+/* Виньетка */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 89;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(5, 4, 1, 0.55) 100%);
+}
+
+/* VHS-полоса */
+.vhs-bar {
+  position: fixed;
+  left: 0; right: 0;
+  height: 90px;
+  z-index: 92;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.045) 40%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.045) 60%,
+    transparent 100%);
+  animation: vhs-bar 8s linear infinite;
+}
+@keyframes vhs-bar { 0% { top: -10%; } 100% { top: 110%; } }
+
+/* Случайный блэкаут */
+@keyframes blackout {
+  0%, 100% { opacity: 1; }
+  1% { opacity: 0; }
+  2.5% { opacity: 1; }
+  3% { opacity: 0.1; }
+  4% { opacity: 1; }
+}
+.blackout-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: #000;
+  pointer-events: none;
+  animation: blackout 0.6s linear;
+}
+
+/* ================= АНИМАЦИИ ================= */
+@keyframes lamp-flicker {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.4; } 5% { opacity: 1; }
+  42% { opacity: 1; } 43% { opacity: 0.2; } 44% { opacity: 1; }
+  45% { opacity: 0.55; } 46% { opacity: 1; }
+  77% { opacity: 1; } 78% { opacity: 0.35; } 80% { opacity: 1; }
+}
+.flicker { animation: lamp-flicker 7s linear infinite; }
+.flicker-slow { animation: lamp-flicker 11s linear infinite reverse; }
+
+@keyframes rec-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.15; } }
+.animate-rec { animation: rec-blink 1.4s steps(1) infinite; }
+
+@keyframes vhs-jitter {
+  0%, 100% { transform: translateX(0); }
+  92% { transform: translateX(0); }
+  93% { transform: translateX(-6px) skewX(2deg); }
+  94% { transform: translateX(4px); }
+  95% { transform: translateX(0); }
+}
+.jitter { animation: vhs-jitter 9s linear infinite; }
+
+@keyframes crawl-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.a-in { animation: crawl-in 0.9s ease-out both; }
+
+@keyframes corridor-zoom {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+.corridor-zoom {
+  animation: corridor-zoom 16s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes bounce-y {
+  0%, 100% { transform: translateY(-25%); }
+  50% { transform: translateY(0); }
+}
+.bounce { animation: bounce-y 1.2s ease-in-out infinite; }
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.pulse { animation: soft-pulse 2s ease-in-out infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+.text-vhs {
+  text-shadow:
+    2px 0 rgba(255, 46, 99, 0.45),
+    -2px 0 rgba(46, 230, 255, 0.45);
+}
+
+/* Глитч-текст */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #ff2e63;
+  z-index: -1;
+  content: attr(data-text) / "";
+  animation: glitch-shift-a 3.2s infinite linear alternate-reverse;
+}
+.glitch::after {
+  color: #2ee6ff;
+  z-index: -2;
+  content: attr(data-text) / "";
+  animation: glitch-shift-b 2.7s infinite linear alternate-reverse;
+}
+@keyframes glitch-shift-a {
+  0% { clip-path: inset(12% 0 84% 0); transform: translate(-4px, -2px); }
+  20% { clip-path: inset(80% 0 4% 0); transform: translate(3px, 1px); }
+  40% { clip-path: inset(40% 0 42% 0); transform: translate(-3px, 2px); }
+  60% { clip-path: inset(4% 0 90% 0); transform: translate(4px, -1px); }
+  80% { clip-path: inset(60% 0 22% 0); transform: translate(-2px, 2px); }
+  100% { clip-path: inset(30% 0 55% 0); transform: translate(3px, -2px); }
+}
+@keyframes glitch-shift-b {
+  0% { clip-path: inset(65% 0 20% 0); transform: translate(4px, 2px); }
+  20% { clip-path: inset(10% 0 75% 0); transform: translate(-4px, -1px); }
+  40% { clip-path: inset(85% 0 3% 0); transform: translate(2px, -2px); }
+  60% { clip-path: inset(35% 0 50% 0); transform: translate(-3px, 1px); }
+  80% { clip-path: inset(5% 0 88% 0); transform: translate(4px, 2px); }
+  100% { clip-path: inset(55% 0 30% 0); transform: translate(-2px, -1px); }
+}
+
+/* ================= ПРОЛОАДЕР ================= */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.7s ease, filter 0.7s ease;
+}
+#preloader.done { opacity: 0; filter: blur(6px); pointer-events: none; }
+.pre-inner { width: 100%; max-width: 36rem; padding: 0 24px; }
+.pre-boot {
+  font-family: var(--font-mono-vhs);
+  font-size: 10px;
+  line-height: 1.625;
+  color: var(--br-wall);
+  min-height: 7rem;
+}
+.pre-line { margin-bottom: 8px; opacity: 0.7; }
+.pre-line.cur { opacity: 1; }
+.pre-bar-track { margin-top: 24px; height: 3px; width: 100%; background: #23200f; overflow: hidden; }
+.pre-bar-fill { height: 100%; width: 0%; background: var(--br-wall); transition: width 0.2s linear; }
+.pre-caption { margin-top: 16px; font-size: 9px; letter-spacing: 0.35em; color: var(--faint); }
+@media (min-width: 640px) { .pre-boot { font-size: 12px; } }
+
+/* ================= HUD ================= */
+.hud {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 95;
+  pointer-events: none;
+  user-select: none;
+}
+.hud-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  font-size: 10px;
+  color: var(--fg);
+}
+.hud-left { display: flex; align-items: center; gap: 10px; }
+.hud-rec { color: var(--danger); }
+.hud-track { letter-spacing: 0.1em; }
+.hud-dim { color: var(--muted); }
+.hud-right { display: flex; align-items: center; gap: 10px; font-size: 10px; }
+.hud-whisper { font-style: italic; color: var(--dc-pink); }
+.hud-label { letter-spacing: 0.1em; color: var(--muted); }
+.hud-sanity {
+  width: 80px; height: 10px;
+  border: 1px solid var(--faint);
+  background: rgba(0,0,0,0.6);
+  padding: 2px;
+}
+.hud-sanity-fill { height: 100%; width: 100%; transition: width 0.5s, background 0.5s; background: var(--br-wall); }
+.hud-num { width: 2.2em; text-align: right; color: var(--fg); }
+.hud-sound {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--faint);
+  background: rgba(0,0,0,0.6);
+  padding: 6px 10px;
+  font-family: var(--font-mono-vhs);
+  font-size: 10px;
+  color: var(--br-wall);
+  min-height: 32px;
+  transition: background 0.2s, color 0.2s;
+}
+.hud-sound:hover { background: var(--br-wall); color: #000; }
+@media (min-width: 640px) {
+  .hud-row { padding: 10px 20px; font-size: 12px; }
+  .hud-right { font-size: 12px; }
+  .hud-sound { font-size: 12px; }
+  .hide-sm { display: inline-flex; }
+}
+@media (min-width: 768px) { .hide-md { display: inline; } }
+
+/* ================= HERO ================= */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+.hero-scene { position: absolute; inset: 0; }
+.hero-layers { position: absolute; inset: 0; }
+
+/* Потолок */
+.hr-ceil {
+  position: absolute;
+  inset: 0;
+  background: #b7a558;
+  clip-path: polygon(0 0, 100% 0, calc(var(--vp-x2) * 1%) calc(var(--vp-y1) * 1%), calc(var(--vp-x1) * 1%) calc(var(--vp-y1) * 1%));
+  background-image: repeating-linear-gradient(90deg, rgba(110,95,42,0.18) 0 3px, transparent 3px 64px);
+}
+.ceil-grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255,249,219,0.25), rgba(110,95,42,0.55));
+}
+.lamp {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 1.8%;
+  min-height: 8px;
+  background: linear-gradient(180deg, #fffdf0 0%, #fff3b0 55%, #e8d78a 100%);
+  box-shadow: 0 0 26px 10px rgba(255,249,219,0.6), 0 18px 60px 24px rgba(255,249,219,0.25);
+}
+
+/* Стены */
+.hr-wall {
+  position: absolute;
+  inset: 0;
+}
+.hr-wall-l {
+  clip-path: polygon(0 0, calc(var(--vp-x1) * 1%) calc(var(--vp-y1) * 1%), calc(var(--vp-x1) * 1%) calc(var(--vp-y2) * 1%), 0 100%);
+}
+.hr-wall-r {
+  clip-path: polygon(100% 0, calc(var(--vp-x2) * 1%) calc(var(--vp-y1) * 1%), calc(var(--vp-x2) * 1%) calc(var(--vp-y2) * 1%), 100% 100%);
+}
+.wall-grad-l { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(200,178,95,0.15) 0%, rgba(110,95,42,0.72) 100%); }
+.wall-grad-r { position: absolute; inset: 0; background: linear-gradient(260deg, rgba(200,178,95,0.15) 0%, rgba(110,95,42,0.72) 100%); }
+.plinth-l {
+  position: absolute; inset: 0; background: #5c4f23;
+  clip-path: polygon(0 96%, calc(var(--vp-x1) * 1%) calc((var(--vp-y2) - 0.6) * 1%), calc(var(--vp-x1) * 1%) calc(var(--vp-y2) * 1%), 0 100%);
+}
+.plinth-r {
+  position: absolute; inset: 0; background: #5c4f23;
+  clip-path: polygon(100% 96%, calc(var(--vp-x2) * 1%) calc((var(--vp-y2) - 0.6) * 1%), calc(var(--vp-x2) * 1%) calc(var(--vp-y2) * 1%), 100% 100%);
+}
+
+/* Пол */
+.hr-floor {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 100%, calc(var(--vp-x1) * 1%) calc(var(--vp-y2) * 1%), calc(var(--vp-x2) * 1%) calc(var(--vp-y2) * 1%), 100% 100%);
+}
+.floor-grad { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(110,95,42,0.6), rgba(12,10,6,0.45)); }
+
+/* Дальняя стена с проёмом */
+.hr-far {
+  position: absolute;
+  left: calc(var(--vp-x1) * 1%);
+  top: calc(var(--vp-y1) * 1%);
+  width: calc((var(--vp-x2) - var(--vp-x1)) * 1%);
+  height: calc((var(--vp-y2) - var(--vp-y1)) * 1%);
+}
+.far-opening {
+  position: absolute;
+  left: 28%; right: 28%; top: 16%; bottom: 16%;
+  background: #000;
+  box-shadow: inset 0 0 40px 16px rgba(0,0,0,0.95);
+}
+
+/* Глубина и виньетка сцены */
+.hr-depth {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 30% 34% at 50% 50%, rgba(0,0,0,0.55) 0%, rgba(12,10,6,0.25) 55%, transparent 100%);
+}
+.hr-vig {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 46%, transparent 35%, rgba(5,4,1,0.6) 100%);
+}
+
+/* VHS-подписи по углам */
+.hero-cap {
+  position: absolute;
+  top: 64px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(233, 226, 200, 0.8);
+  z-index: 5;
+}
+.hero-cap p + p { margin-top: 4px; color: var(--muted); }
+.hero-cap-l { left: 16px; }
+.hero-cap-r { right: 16px; text-align: right; }
+.hero-cap-r p + p { color: var(--danger); }
+@media (min-width: 640px) {
+  .hero-cap { font-size: 12px; }
+  .hero-cap-l { left: 24px; }
+  .hero-cap-r { right: 24px; }
+}
+
+/* Центральный блок */
+.hero-inner {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 16px;
+}
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: rgba(233, 226, 200, 0.8);
+  margin-bottom: 24px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+.hero-title {
+  font-family: var(--font-display-pixel);
+  color: #f5edd0;
+  line-height: 1.2;
+  font-size: clamp(1.5rem, 6.4vw, 4.2rem);
+  text-shadow: 0 4px 0 rgba(0,0,0,0.55), 0 0 40px rgba(255,249,219,0.25);
+}
+.hero-sub {
+  margin-top: 28px;
+  max-width: 36rem;
+  font-size: 12px;
+  line-height: 1.625;
+  color: #eee5c4;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.85);
+}
+.hero-actions {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #d8cfae;
+  transition: color 0.2s;
+  z-index: 10;
+}
+.hero-scroll:hover { color: var(--br-wall); }
+.hero-scroll span { font-size: 10px; letter-spacing: 0.3em; text-shadow: 0 2px 8px rgba(0,0,0,0.9); }
+@media (min-width: 640px) {
+  .hero-eyebrow { font-size: 12px; }
+  .hero-sub { font-size: 14px; }
+}
+
+/* ================= КНОПКИ ================= */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 2px solid var(--br-wall);
+  background: var(--br-wall);
+  padding: 12px 24px;
+  font-family: var(--font-display-pixel);
+  font-size: 10px;
+  color: var(--br-ink);
+  min-height: 44px;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-primary:hover { background: transparent; color: var(--br-wall); }
+.btn-pink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid rgba(244, 201, 228, 0.7);
+  background: rgba(0,0,0,0.4);
+  padding: 12px 24px;
+  font-family: var(--font-display-pixel);
+  font-size: 10px;
+  color: var(--dc-pink);
+  min-height: 44px;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-pink:hover { background: var(--dc-pink); color: var(--br-ink); }
+.btn-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--faint);
+  padding: 12px 20px;
+  font-family: var(--font-mono-vhs);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  min-height: 44px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-line:hover { border-color: var(--br-wall); color: var(--br-wall); }
+.btn-line.gold { color: var(--br-wall); letter-spacing: 0.1em; padding: 10px 16px; }
+.btn-line:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-line:disabled:hover { border-color: var(--faint); color: var(--br-wall); }
+@media (min-width: 640px) {
+  .btn-primary, .btn-pink { font-size: 12px; }
+}
+
+/* ================= СЕКЦИИ ================= */
+.sec { position: relative; padding: 96px 16px; background: var(--bg); }
+@media (min-width: 640px) { .sec { padding: 128px 16px; } }
+.sec-head { text-align: center; margin-bottom: 56px; }
+.sec-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.sec-title {
+  font-family: var(--font-display-pixel);
+  color: var(--fg);
+  font-size: clamp(1.35rem, 4.6vw, 2.25rem);
+  line-height: 1.35;
+}
+.sec-desc {
+  margin-top: 20px;
+  max-width: 42rem;
+  margin-inline: auto;
+  font-size: 12px;
+  line-height: 1.625;
+  color: var(--muted);
+}
+@media (min-width: 640px) {
+  .sec-head { margin-bottom: 64px; }
+  .sec-eyebrow { font-size: 12px; }
+  .sec-desc { font-size: 14px; }
+}
+
+/* Появление при скролле */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition-delay: var(--rd, 0s);
+}
+[data-reveal].revealed { opacity: 1; transform: translateY(0); }
+
+/* ================= КНИЖНЫЕ ПОЛКИ ================= */
+.shelf-box {
+  position: relative;
+  border: 1px solid #3c2612;
+  padding: 32px 16px 0;
+  background: linear-gradient(180deg, #17110a 0%, #100b06 100%);
+}
+.shelf-wall {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(90,58,30,0.16) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(90deg, rgba(90,58,30,0.1) 0 1px, transparent 1px 90px);
+}
+.book-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dead-book {
+  width: 36px;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+}
+.live-book { position: relative; }
+.spine {
+  position: relative;
+  width: 74px;
+  height: 210px;
+  border: 1px solid rgba(0,0,0,0.6);
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  background: var(--spine);
+  box-shadow: inset -6px 0 12px rgba(0,0,0,0.45), inset 3px 0 6px rgba(255,255,255,0.12);
+  transition: transform 0.3s ease;
+}
+.live-book:hover .spine,
+.live-book:focus-visible .spine {
+  transform: translateY(-14px) rotate(-1.5deg);
+}
+.spine-sym {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ornament);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ornament);
+}
+.spine-sym .ic { width: 20px; height: 20px; }
+.spine-title {
+  margin-top: 12px;
+  font-family: var(--font-display-pixel);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--ornament);
+  writing-mode: vertical-rl;
+  max-height: 150px;
+  overflow: hidden;
+}
+.spine-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 34px var(--glow);
+  transition: opacity 0.3s;
+}
+.live-book:hover .spine-glow { opacity: 1; }
+.shelf-board {
+  position: relative;
+  height: 20px;
+  margin: 0 -16px;
+  background: linear-gradient(180deg, #6b4523 0%, #4a2f16 60%, #2c1c0d 100%);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.75);
+}
+.shelf-hint {
+  margin-top: 24px;
+  text-align: center;
+  font-family: var(--font-hand-dream);
+  font-size: 18px;
+  color: var(--dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+@media (min-width: 640px) {
+  .book-row { gap: 28px; }
+  .dead-book { width: 48px; }
+  .spine { width: 92px; height: 240px; }
+  .spine-title { font-size: 9px; }
+  .shelf-box { padding: 32px 40px 0; }
+  .shelf-board { margin: 0 -40px; }
+  .shelf-hint { font-size: 20px; }
+}
+
+/* ================= МОДАЛКА КНИГИ ================= */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 97;
+  display: flex;
+  padding: 16px;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  overflow-y: auto;
+  animation: fade-in 0.3s ease both;
+}
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 48rem;
+  margin: auto;
+  padding: 8px 0;
+}
+.modal-close {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--faint);
+  background: rgba(12,10,6,0.9);
+  padding: 8px 12px;
+  font-family: var(--font-mono-vhs);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  min-height: 40px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.modal-close:hover { color: var(--br-wall); border-color: var(--br-wall); }
+
+/* --- Стадия обложки --- */
+@keyframes cover-in {
+  from { opacity: 0; transform: translateY(44px) rotateY(-18deg); }
+  to { opacity: 1; transform: translateY(0) rotateY(0); }
+}
+.cover-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 1200px;
+  animation: cover-in 0.45s ease-out both;
+}
+.cover-wrap { width: min(56vw, 240px); }
+.cover-stack { position: relative; }
+.cover-edge {
+  position: absolute;
+  inset: 0;
+  transform: translate(8px, 8px);
+  background: #d8cba4;
+}
+.cover-art {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border: 4px solid var(--line);
+  overflow: hidden;
+  background: var(--cover);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+}
+.cover-leather {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 45% 80%, rgba(255,255,255,0.05) 0 2px, transparent 3px);
+  background-size: 90px 90px, 120px 120px, 70px 70px;
+}
+.cover-frame { position: absolute; pointer-events: none; border-color: var(--ornament); border-style: solid; }
+.cover-frame.f1 { inset: 12px; border-width: 2px; }
+.cover-frame.f2 { inset: 20px; border-width: 1px; opacity: 0.7; }
+.corner {
+  position: absolute;
+  width: 12px; height: 12px;
+  transform: rotate(45deg);
+  background: var(--ornament);
+  pointer-events: none;
+}
+.corner.c1 { left: 8px; top: 8px; }
+.corner.c2 { right: 8px; top: 8px; }
+.corner.c3 { left: 8px; bottom: 8px; }
+.corner.c4 { right: 8px; bottom: 8px; }
+.medallion {
+  position: absolute;
+  left: 0; right: 0;
+  top: 24%;
+  display: flex;
+  justify-content: center;
+}
+.medallion-inner {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--ornament);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ornament);
+  box-shadow: 0 0 24px var(--glow), inset 0 0 16px var(--glow);
+}
+.cover-caption {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 14%;
+  padding: 0 16px;
+  text-align: center;
+}
+.cover-title {
+  font-family: var(--font-display-pixel);
+  font-size: 11px;
+  line-height: 1.625;
+  color: var(--ornament);
+  text-shadow: 0 0 12px var(--glow);
+}
+.cover-div { margin: 12px auto 0; width: 64px; height: 2px; background: var(--ornament); }
+@media (min-width: 640px) { .cover-title { font-size: 12px; } }
+
+.cover-sub {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--dim);
+}
+.cover-desc {
+  margin-top: 8px;
+  text-align: center;
+  font-family: var(--font-hand-dream);
+  font-size: 16px;
+  color: var(--muted);
+  padding: 0 8px;
+}
+@media (min-width: 640px) { .cover-desc { font-size: 18px; } }
+.cover-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* --- Стадия чтения --- */
+@keyframes read-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.read-stage { animation: read-in 0.4s ease both; }
+.read-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-right: 96px;
+}
+.read-title { font-family: var(--font-display-pixel); font-size: 10px; }
+.read-pages {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--dim);
+  text-align: right;
+}
+@media (min-width: 640px) {
+  .read-head { padding-right: 112px; }
+  .read-title { font-size: 12px; }
+}
+.spread-wrap { position: relative; perspective: 1800px; }
+.spread {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  box-shadow: 0 34px 90px rgba(0,0,0,0.85);
+}
+.page {
+  position: relative;
+  min-height: 300px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.page.pl { background: linear-gradient(105deg, #e6d9b8 0%, #efe4c4 12%, #ece0bd 100%); }
+.page.pr { background: linear-gradient(255deg, #e6d9b8 0%, #efe4c4 12%, #ece0bd 100%); }
+.page-lines {
+  position: absolute;
+  inset: 16px;
+  opacity: 0.3;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(0deg, transparent 0 26px, rgba(90,70,40,0.35) 26px 27px);
+}
+.page-stains {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 78% 18%, rgba(150,20,20,0.35) 0 14px, rgba(150,20,20,0.12) 20px, transparent 30px),
+    radial-gradient(circle at 15% 80%, rgba(120,10,10,0.28) 0 10px, transparent 24px);
+}
+.page-gutter { position: absolute; top: 0; bottom: 0; width: 32px; pointer-events: none; }
+.page-gutter.g-r { right: 0; background: linear-gradient(270deg, rgba(80,60,30,0.28), transparent); }
+.page-gutter.g-l { left: 0; background: linear-gradient(90deg, rgba(80,60,30,0.28), transparent); }
+.page-content {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  padding: 0 8px;
+}
+@keyframes line-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-line {
+  font-family: var(--font-hand-dream);
+  font-size: 18px;
+  line-height: 1.375;
+  animation: line-in 0.7s ease-out both;
+}
+.page-line.req { font-size: 20px; }
+.page-lock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono-vhs);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  margin-top: 8px;
+  opacity: 0.8;
+  animation: line-in 0.7s ease-out both;
+  animation-delay: 1.1s;
+}
+.page-num {
+  position: relative;
+  margin-top: 16px;
+  text-align: center;
+  font-size: 10px;
+  color: #8a7148;
+}
+@media (min-width: 640px) {
+  .page { min-height: 340px; padding: 32px; }
+  .page-lines { inset: 24px; }
+  .page-content { padding: 0 24px; }
+  .page-line { font-size: 20px; }
+  .page-line.req { font-size: 24px; }
+}
+@media (min-width: 768px) {
+  .spread { grid-template-columns: 1fr 1fr; gap: 0; }
+}
+
+/* Раскрытие обложки / перелистывание */
+@keyframes flip-out {
+  from { transform: rotateY(0deg); opacity: 1; }
+  to { transform: rotateY(-168deg); opacity: 0; }
+}
+@keyframes flip-out-short {
+  from { transform: rotateY(0deg); opacity: 0.55; }
+  to { transform: rotateY(-168deg); opacity: 0; }
+}
+.flip-lid {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  pointer-events: none;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  animation: flip-out 1.05s ease-in-out both;
+}
+.flip-lid.short { animation: flip-out-short 0.55s ease-in-out both; }
+.flip-border { position: absolute; inset: 12px; border: 2px solid; }
+.flip-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+.read-nav {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ================= ЛЕНТА-ПЛЁНКА ================= */
+.tape {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(110,95,42,0.5);
+  border-bottom: 1px solid rgba(110,95,42,0.5);
+  background: #000;
+  padding: 20px 16px;
+}
+.tape-perf {
+  position: absolute;
+  left: 0; right: 0;
+  height: 8px;
+  opacity: 0.4;
+  background-image: repeating-linear-gradient(90deg, transparent 0 14px, #23200f 14px 28px);
+}
+.tape-perf.top { top: 0; }
+.tape-perf.bot { bottom: 0; }
+.tape-text {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: rgba(200, 178, 95, 0.7);
+}
+@media (min-width: 640px) { .tape-text { font-size: 12px; } }
+
+/* ================= ДНЕВНИК ================= */
+.journal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .journal-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+}
+.j-form {
+  border: 1px solid rgba(110,95,42,0.6);
+  background: var(--panel);
+  padding: 24px;
+  height: fit-content;
+}
+.j-form-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: var(--br-wall);
+}
+.j-form-head h3 {
+  font-family: var(--font-display-pixel);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--fg);
+}
+.j-label { display: block; margin-bottom: 20px; }
+.j-label .j-cap {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.j-label .j-cap-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.j-counter.over { color: var(--danger); }
+.j-input, .j-select, .j-textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--faint);
+  padding: 12px 16px;
+  font-family: var(--font-mono-vhs);
+  font-size: 14px;
+  color: var(--fg);
+  transition: border-color 0.2s;
+}
+.j-input::placeholder, .j-textarea::placeholder { color: #5c5335; }
+.j-input:focus, .j-select:focus, .j-textarea:focus { outline: none; border-color: var(--br-wall); }
+.j-textarea { resize: none; }
+.j-submit {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 2px solid var(--br-wall);
+  background: var(--br-wall);
+  padding: 14px 24px;
+  font-family: var(--font-display-pixel);
+  font-size: 10px;
+  color: var(--br-ink);
+  min-height: 48px;
+  transition: background 0.2s, color 0.2s;
+}
+.j-submit:hover { background: transparent; color: var(--br-wall); }
+.j-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.j-status { margin-top: 16px; min-height: 1.5rem; font-size: 12px; }
+.j-status.ok { color: #7fb069; }
+.j-status.err { color: var(--danger); }
+@media (min-width: 640px) {
+  .j-form { padding: 32px; }
+  .j-form-head h3 { font-size: 12px; }
+}
+
+/* Бумажные записки */
+.entries {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+}
+.paper-note {
+  background: var(--dc-cream);
+  color: #3d3421;
+  padding: 20px;
+  position: relative;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.25s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 14px 34px rgba(0,0,0,0.55);
+  overflow-wrap: anywhere;
+}
+.paper-note:hover { transform: rotate(0deg); }
+.paper-note::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(61,52,33,0.12) 27px 28px);
+  pointer-events: none;
+}
+.note-head {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+.note-callsign { font-family: var(--font-display-pixel); font-size: 10px; color: #5d4a75; }
+.note-level { font-size: 10px; color: var(--dim); }
+.note-text {
+  position: relative;
+  font-family: var(--font-hand-dream);
+  font-size: 18px;
+  line-height: 1.375;
+  color: #3d3421;
+}
+.note-meta { position: relative; margin-top: 12px; font-size: 10px; color: var(--muted); }
+@media (min-width: 640px) {
+  .paper-note { padding: 24px; }
+  .note-text { font-size: 20px; }
+}
+.j-empty {
+  border: 1px dashed rgba(110,95,42,0.6);
+  background: var(--panel);
+  padding: 40px;
+  text-align: center;
+  color: var(--dim);
+}
+.j-empty .ic { width: 32px; height: 32px; color: var(--faint); margin-bottom: 16px; }
+.j-empty p { font-size: 12px; line-height: 1.625; }
+
+/* ================= ФУТЕР ================= */
+.footer {
+  position: relative;
+  margin-top: auto;
+  border-top: 1px solid rgba(110,95,42,0.5);
+  background: #080704;
+  padding: 56px 16px 96px;
+}
+.footer-hand-main {
+  text-align: center;
+  font-family: var(--font-hand-dream);
+  font-size: 24px;
+  line-height: 1.375;
+  color: var(--br-wall);
+}
+.footer-hand-sub {
+  text-align: center;
+  font-family: var(--font-hand-dream);
+  font-size: 20px;
+  color: var(--dim);
+  margin-top: 8px;
+}
+.footer-nav {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: 32px;
+  row-gap: 12px;
+}
+.footer-nav a {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.footer-nav a:hover { color: var(--br-wall); }
+.footer-meta {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(110,95,42,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.footer-meta p {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--faint);
+}
+.footer-hole {
+  position: absolute;
+  left: 38%; right: 38%;
+  bottom: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, #000);
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .footer-hand-main { font-size: 30px; }
+  .footer-hand-sub { font-size: 24px; }
+  .footer-meta { flex-direction: row; }
+}
+
+/* ================= REDUCED MOTION ================= */
+@media (prefers-reduced-motion: reduce) {
+  .flicker, .flicker-slow, .jitter, .bounce, .pulse,
+  .corridor-zoom, .vhs-bar, .grain::after,
+  .spin, .animate-rec { animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body class="preloading grain scanlines">
+<!-- ===== SVG-СПРАЙТ ИКОНОК (lucide) ===== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-feather" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-droplets" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-chevl" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chevr" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevd" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-click" viewBox="0 0 24 24"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></symbol>
+  <symbol id="i-volx" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol>
+  <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+</svg>
+
+<!-- ===== ПРОЛОАДЕР ===== -->
+<div id="preloader" aria-label="Загрузка архива">
+  <div class="pre-inner">
+    <div class="pre-boot" id="pre-boot"></div>
+    <div class="pre-bar-track"><div class="pre-bar-fill" id="pre-bar"></div></div>
+    <p class="pre-caption">М.Е.Г. // АРХИВ ЛИМИНАЛЬНЫХ ПРОСТРАНСТВ</p>
+  </div>
+</div>
+
+<!-- ===== ОВЕРЛЕИ ===== -->
+<div class="vignette" aria-hidden="true"></div>
+<div class="vhs-bar" aria-hidden="true"></div>
+
+<!-- ===== HUD ===== -->
+<div class="hud" aria-hidden="false">
+  <div class="hud-row">
+    <div class="hud-left">
+      <span class="animate-rec hud-rec">●</span>
+      <span class="hud-track">REC</span>
+      <span class="hud-dim hide-sm" id="hud-tc">00:00:00</span>
+      <span class="hud-dim hide-md" id="hud-day">ДИСК 1</span>
+    </div>
+    <div class="hud-right">
+      <span class="hud-whisper hide-sm pulse" id="hud-whisper"></span>
+      <span class="hud-label hide-sm">РАССУДОК</span>
+      <div class="hud-sanity"><div class="hud-sanity-fill" id="hud-sanity-fill"></div></div>
+      <span class="hud-num" id="hud-sanity-num">100%</span>
+      <button class="hud-sound" id="hud-sound" aria-pressed="false" aria-label="Включить гул ламп"></button>
+    </div>
+  </div>
+</div>
+
+<main>
+<!-- ===== HERO: ЖЁЛТЫЙ КОРИДОР ===== -->
+<header id="top" class="hero" aria-label="Уровень 0 — вход">
+  <div class="hero-scene" aria-hidden="true">
+    <div class="hero-layers corridor-zoom">
+      <!-- Потолок с лампами -->
+      <div class="hr-ceil">
+        <div class="ceil-grad"></div>
+        <div class="lamp flicker" style="top:2.5%;width:36%;animation-delay:0s"></div>
+        <div class="lamp flicker-slow" style="top:9%;width:26%;animation-delay:1.15s"></div>
+        <div class="lamp flicker" style="top:15.5%;width:19%;animation-delay:2.3s"></div>
+        <div class="lamp flicker-slow" style="top:21.5%;width:13.5%;animation-delay:3.45s"></div>
+        <div class="lamp flicker" style="top:27%;width:9.5%;animation-delay:4.6s"></div>
+      </div>
+      <!-- Левая стена -->
+      <div class="hr-wall hr-wall-l br-wallpaper">
+        <div class="wall-grad-l"></div>
+        <div class="plinth-l"></div>
+      </div>
+      <!-- Правая стена -->
+      <div class="hr-wall hr-wall-r br-wallpaper">
+        <div class="wall-grad-r"></div>
+        <div class="plinth-r"></div>
+      </div>
+      <!-- Пол -->
+      <div class="hr-floor br-carpet">
+        <div class="floor-grad"></div>
+      </div>
+      <!-- Дальняя стена -->
+      <div class="hr-far br-wallpaper">
+        <div class="far-opening"></div>
+      </div>
+      <div class="hr-depth"></div>
+    </div>
+    <div class="hr-vig"></div>
+  </div>
+
+  <!-- VHS-подписи -->
+  <div class="hero-cap hero-cap-l jitter" aria-hidden="true">
+    <p>PLAY ►</p>
+    <p>КАССЕТА №0-1991</p>
+  </div>
+  <div class="hero-cap hero-cap-r" aria-hidden="true">
+    <p>ЗАЛ №0</p>
+    <p>ДОСТУП: ОГРАНИЧЕН</p>
+  </div>
+
+  <!-- Центральный заголовок -->
+  <div class="hero-inner">
+    <p class="hero-eyebrow a-in" style="animation-delay:0.4s">ТЫ ПРОВАЛИЛСЯ СКВОЗЬ РЕАЛЬНОСТЬ</p>
+    <h1 class="hero-title a-in" style="animation-delay:0.7s;animation-duration:1.1s">
+      <span class="glitch" data-text="ДРИМРУМС">ДРИМРУМС</span>
+    </h1>
+    <p class="hero-sub a-in" style="animation-delay:1.1s">
+      Библиотека лиминальных пространств. Здесь хранятся книги, которых
+      не должно существовать: их писали те, кто провалился сквозь
+      реальность — и не вернулся за своими записями.
+    </p>
+    <div class="hero-actions a-in" style="animation-delay:1.4s;animation-duration:0.8s">
+      <a href="#books" class="btn-primary">К КНИЖНЫМ ПОЛКАМ</a>
+      <a href="#journal" class="btn-pink">ДНЕВНИК СНОВ</a>
+    </div>
+
+    <a href="#books" class="hero-scroll a-in" style="animation-delay:2s" aria-label="Прокрутить к книжным полкам">
+      <span>К ПОЛКАМ</span>
+      <svg class="ic i20 bounce"><use href="#i-chevd"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ===== КНИЖНЫЕ ПОЛКИ ===== -->
+<section id="books" class="sec" aria-label="Книжные полки">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="sec-eyebrow">РАЗДЕЛ 01 // БИБЛИОТЕКА</p>
+      <h2 class="sec-title">КНИЖНЫЕ ПОЛКИ</h2>
+      <p class="sec-desc">
+        Три тома пережили все перезаписи реальности. Каждый — под замком
+        владельца. Сними книгу с полки, рассмотри обложку и открой — если
+        осмелишься.
+      </p>
+    </div>
+
+    <div data-reveal style="--rd:0.1s">
+      <div class="shelf-box">
+        <div class="shelf-wall" aria-hidden="true"></div>
+        <div class="book-row">
+          <!-- Мёртвые книги слева -->
+          <div class="dead-book" style="height:clamp(120px,17vw,168px);background:linear-gradient(90deg,#241d12 0%,#2f2617 100%)" aria-hidden="true"></div>
+          <div class="dead-book" style="height:clamp(150px,21vw,208px);background:linear-gradient(90deg,#2e2415 0%,#221b10 100%)" aria-hidden="true"></div>
+          <div class="dead-book" style="height:clamp(110px,15vw,148px);background:linear-gradient(90deg,#1f1a11 0%,#292213 100%)" aria-hidden="true"></div>
+
+          <!-- Ангельская -->
+          <button class="live-book" data-book="angelic" aria-label="Снять с полки: АНГЕЛЬСКАЯ КНИГА" data-reveal style="--rd:0.25s">
+            <div class="spine" style="--spine:linear-gradient(90deg,#e9dfc2 0%,#f6efd9 45%,#d9cba2 100%);--ornament:#b8922e;--glow:rgba(233,223,194,0.55)">
+              <span class="spine-sym"><svg class="ic"><use href="#i-feather"/></svg></span>
+              <span class="spine-title">АНГЕЛЬСКАЯ КНИГА</span>
+              <span class="spine-glow" aria-hidden="true"></span>
+            </div>
+          </button>
+
+          <!-- Демоническая -->
+          <button class="live-book" data-book="demonic" aria-label="Снять с полки: ДЕМОНИЧЕСКАЯ КНИГА" data-reveal style="--rd:0.4s">
+            <div class="spine" style="--spine:linear-gradient(90deg,#17110f 0%,#2b1c17 50%,#120d0b 100%);--ornament:#b3121f;--glow:rgba(179,18,31,0.5)">
+              <span class="spine-sym"><svg class="ic"><use href="#i-flame"/></svg></span>
+              <span class="spine-title">ДЕМОНИЧЕСКАЯ КНИГА</span>
+              <span class="spine-glow" aria-hidden="true"></span>
+            </div>
+          </button>
+
+          <!-- Кровавая -->
+          <button class="live-book" data-book="bloody" aria-label="Снять с полки: КРОВАВАЯ КНИГА" data-reveal style="--rd:0.55s">
+            <div class="spine" style="--spine:linear-gradient(90deg,#3d0c0c 0%,#571414 50%,#2a0808 100%);--ornament:#d90429;--glow:rgba(217,4,41,0.55)">
+              <span class="spine-sym"><svg class="ic"><use href="#i-droplets"/></svg></span>
+              <span class="spine-title">КРОВАВАЯ КНИГА</span>
+              <span class="spine-glow" aria-hidden="true"></span>
+            </div>
+          </button>
+
+          <!-- Мёртвые книги справа -->
+          <div class="dead-book" style="height:clamp(110px,15vw,148px);background:linear-gradient(90deg,#1f1a11 0%,#292213 100%)" aria-hidden="true"></div>
+          <div class="dead-book" style="height:clamp(150px,21vw,208px);background:linear-gradient(90deg,#2e2415 0%,#221b10 100%)" aria-hidden="true"></div>
+          <div class="dead-book" style="height:clamp(120px,17vw,168px);background:linear-gradient(90deg,#241d12 0%,#2f2617 100%)" aria-hidden="true"></div>
+        </div>
+        <div class="shelf-board" aria-hidden="true"></div>
+      </div>
+
+      <p class="shelf-hint" data-reveal style="--rd:0.2s">
+        <svg class="ic i16"><use href="#i-click"/></svg>
+        нажми на книгу, чтобы снять её с полки
+      </p>
+    </div>
+  </div>
+
+  <!-- Контейнер модалки книги (заполняется скриптом) -->
+  <div id="modal-root"></div>
+</section>
+
+<!-- ===== ЛЕНТА-ПЛЁНКА ===== -->
+<div class="tape" aria-hidden="true">
+  <div class="tape-perf top"></div>
+  <p class="tape-text" id="tape-text">МЕЖДУ КАДРАМИ ТЕБЯ НИКТО НЕ ВИДЕЛ</p>
+  <div class="tape-perf bot"></div>
+</div>
+
+<!-- ===== ДНЕВНИК СНОВИДЕНИЙ ===== -->
+<section id="journal" class="sec" aria-label="Дневник сновидений">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <p class="sec-eyebrow">РАЗДЕЛ 02 // СВЯЗЬ</p>
+      <h2 class="sec-title">ДНЕВНИК СНОВИДЕНИЙ</h2>
+      <p class="sec-desc">
+        Книги заперты владельцами — но дневник открыт для всех. Те, кто
+        провалился, оставляют записи здесь. Кто-то ищет выход, кто-то уже
+        забыл, что искал. Оставь свою — вдруг именно она выведет отсюда
+        следующего.
+      </p>
+    </div>
+
+    <div class="journal-grid">
+      <!-- Форма -->
+      <form class="j-form" id="j-form" data-reveal aria-label="Форма записи в дневник" novalidate>
+        <div class="j-form-head">
+          <svg class="ic i20" aria-hidden="true"><use href="#i-feather"/></svg>
+          <h3>НОВАЯ ЗАПИСЬ</h3>
+        </div>
+
+        <label class="j-label">
+          <span class="j-cap">ПОЗЫВНОЙ</span>
+          <input class="j-input" id="j-callsign" maxlength="40" placeholder="странник_1991" autocomplete="off">
+        </label>
+
+        <label class="j-label">
+          <span class="j-cap">ТЕКУЩИЙ УРОВЕНЬ</span>
+          <select class="j-select" id="j-level">
+            <option>УРОВЕНЬ 0 // ПУСТОТА</option>
+            <option>УРОВЕНЬ 1 // СКЛАД</option>
+            <option>УРОВЕНЬ 37 // БАССЕЙНЫ</option>
+            <option>УРОВЕНЬ ! // БЕГИ</option>
+            <option>УРОВЕНЬ =) // ВЕЧЕРИНКА</option>
+            <option>УРОВЕНЬ 188 // ПОРТ</option>
+            <option>СОН // МЕСТО НЕИЗВЕСТНО</option>
+          </select>
+        </label>
+
+        <label class="j-label">
+          <span class="j-cap-flex">
+            <span>ЧТО ТЫ ВИДИШЬ?</span>
+            <span class="j-counter" id="j-counter">0/500</span>
+          </span>
+          <textarea class="j-textarea" id="j-message" maxlength="500" rows="5" placeholder="обои стали тёплыми. за стеной кто-то дышит в моём ритме. я иду к выходу, но, кажется, выход идёт ко мне..."></textarea>
+        </label>
+
+        <button type="submit" class="j-submit" id="j-submit">
+          <svg class="ic i16" aria-hidden="true"><use href="#i-send"/></svg>
+          ОСТАВИТЬ ЗАПИСЬ
+        </button>
+
+        <div class="j-status" id="j-status" aria-live="polite"></div>
+      </form>
+
+      <!-- Лента записей -->
+      <div data-reveal style="--rd:0.1s" aria-label="Записи странников">
+        <ul class="entries" id="j-entries"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===== ФУТЕР ===== -->
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-hand-main">ты не проснёшься.</p>
+    <p class="footer-hand-sub">но здесь можно остаться. здесь даже уютно, если привыкнуть к гулу.</p>
+
+    <nav class="footer-nav" aria-label="Карта архива">
+      <a href="#books">КНИГИ</a>
+      <a href="#journal">ДНЕВНИК</a>
+    </nav>
+
+    <div class="footer-meta">
+      <p>ДРИМРУМС // АРХИВ ЛИМИНАЛЬНЫХ ПРОСТРАНСТВ</p>
+      <p>КАССЕТА №0-1991 // НЕ ПЕРЕМАТЫВАТЬ</p>
+    </div>
+  </div>
+  <div class="footer-hole" aria-hidden="true"></div>
+</footer>
+
+<script>
+"use strict";
+
+/* ============ УТИЛИТЫ ============ */
+function $(sel, root) { return (root || document).querySelector(sel); }
+
+function icon(name, size) {
+  return '<svg class="ic ' + (size || "") + '" aria-hidden="true"><use href="#i-' + name + '"/></svg>';
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+/* ============ ПРОЛОАДЕР (VHS-загрузка) ============ */
+(function () {
+  var BOOT_LINES = [
+    "> ИНИЦИАЛИЗАЦИЯ НОСИТЕЛЯ №0-1991...",
+    "> ПРОВЕРКА ГРАНИЦ РЕАЛЬНОСТИ... [ПРОВАЛ]",
+    "> ОБНАРУЖЕН NOCLIP. ЗАПИСЬ СОХРАНЕНА.",
+    "> ДОБРО ПОЖАЛОВАТЬ НА УРОВЕНЬ 0."
+  ];
+  var pre = $("#preloader");
+  var box = $("#pre-boot");
+  var bar = $("#pre-bar");
+  var li = 0, ci = 0;
+
+  function render() {
+    var html = "";
+    for (var i = 0; i < li; i++) html += '<p class="pre-line">' + BOOT_LINES[i] + "</p>";
+    if (li < BOOT_LINES.length) {
+      html += '<p class="pre-line cur text-vhs">' + BOOT_LINES[li].slice(0, ci) + '<span class="animate-rec">▮</span></p>';
+    }
+    box.innerHTML = html;
+    bar.style.width = Math.min(100, ((li + ci / 30) / BOOT_LINES.length) * 100) + "%";
+  }
+
+  function done() {
+    pre.classList.add("done");
+    document.body.classList.remove("preloading");
+    setTimeout(function () { if (pre.parentNode) pre.parentNode.removeChild(pre); }, 750);
+  }
+
+  function tick() {
+    if (li >= BOOT_LINES.length) { render(); setTimeout(done, 900); return; }
+    var line = BOOT_LINES[li];
+    if (ci < line.length) { ci++; render(); setTimeout(tick, 26); }
+    else { li++; ci = 0; render(); setTimeout(tick, 340); }
+  }
+
+  render();
+  setTimeout(tick, 350);
+})();
+
+/* ============ СЛУЧАЙНЫЕ СБОИ СИГНАЛА ============ */
+(function () {
+  function schedule() {
+    setTimeout(function () {
+      var d = document.createElement("div");
+      d.className = "blackout-flash";
+      d.setAttribute("aria-hidden", "true");
+      document.body.appendChild(d);
+      setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 700);
+      schedule();
+    }, 14000 + Math.random() * 24000);
+  }
+  schedule();
+})();
+
+/* ============ HUD: ТАЙМКОД, РАССУДОК, ШЁПОТЫ ============ */
+(function () {
+  var tcEl = $("#hud-tc");
+  var dayEl = $("#hud-day");
+  var fill = $("#hud-sanity-fill");
+  var num = $("#hud-sanity-num");
+  var whisperEl = $("#hud-whisper");
+  var WHISPERS = [
+    [85, "гул стал громче"],
+    [70, "не оглядывайся"],
+    [55, "ты слышишь шаги за стеной?"],
+    [40, "обои дышат"],
+    [25, "оно уже знает твоё имя"]
+  ];
+  var start = Date.now();
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function tick() {
+    var el = Math.floor((Date.now() - start) / 1000);
+    tcEl.textContent = pad(Math.floor(el / 3600)) + ":" + pad(Math.floor((el % 3600) / 60)) + ":" + pad(el % 60);
+    var days = Math.floor((Date.now() - new Date(1991, 3, 23).getTime()) / 86400000);
+    dayEl.textContent = "ДИСК " + days;
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? window.scrollY / max : 0;
+    var value = Math.max(8, Math.round(100 - p * 88));
+    fill.style.width = value + "%";
+    fill.style.background = value > 55 ? "#c8b25f" : (value > 28 ? "#d97706" : "#d90429");
+    num.textContent = value + "%";
+    var found = null;
+    for (var i = 0; i < WHISPERS.length; i++) {
+      if (value <= WHISPERS[i][0]) { found = WHISPERS[i][1]; break; }
+    }
+    whisperEl.textContent = found ? "«" + found + "»" : "";
+  }
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+})();
+
+/* ============ ГУЛ ЛАМП (Web Audio) ============ */
+(function () {
+  var btn = $("#hud-sound");
+  var ctx = null, master = null, nodes = null;
+  var on = false;
+
+  function render() {
+    btn.innerHTML = icon(on ? "vol" : "volx", "i14") +
+      '<span class="hide-sm">' + (on ? "ГУЛ: ВКЛ" : "ГУЛ: ВЫКЛ") + "</span>";
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "Выключить гул ламп" : "Включить гул ламп");
+  }
+
+  function stop() {
+    if (!ctx) return;
+    try { master.gain.setTargetAtTime(0, ctx.currentTime, 0.2); } catch (e) {}
+    var dyingCtx = ctx, dyingNodes = nodes;
+    setTimeout(function () {
+      try { dyingNodes.osc.stop(); dyingNodes.osc2.stop(); dyingNodes.noise.stop(); } catch (e) {}
+      try { dyingCtx.close(); } catch (e) {}
+    }, 400);
+    ctx = null; master = null; nodes = null;
+    on = false;
+    render();
+  }
+
+  function start() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+    master.gain.setTargetAtTime(0.045, ctx.currentTime, 0.6);
+
+    var osc = ctx.createOscillator();
+    osc.type = "sawtooth";
+    osc.frequency.value = 120;
+    var oscFilter = ctx.createBiquadFilter();
+    oscFilter.type = "lowpass";
+    oscFilter.frequency.value = 420;
+    osc.connect(oscFilter);
+    oscFilter.connect(master);
+    osc.start();
+
+    var osc2 = ctx.createOscillator();
+    osc2.type = "sine";
+    osc2.frequency.value = 240;
+    var g2 = ctx.createGain();
+    g2.gain.value = 0.3;
+    osc2.connect(g2);
+    g2.connect(master);
+    osc2.start();
+
+    var buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.02;
+    var noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+    var noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "bandpass";
+    noiseFilter.frequency.value = 3000;
+    var noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0.15;
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(master);
+    noise.start();
+
+    nodes = { osc: osc, osc2: osc2, noise: noise };
+    on = true;
+    render();
+  }
+
+  render();
+  btn.addEventListener("click", function () {
+    if (on) stop();
+    else if (ctx) { ctx.resume().then(start); }
+    else start();
+  });
+})();
+
+/* ============ ЛЕНТА-ПЛЁНКА: СМЕНА ТЕКСТА ============ */
+(function () {
+  var TEXTS = [
+    "МЕЖДУ КАДРАМИ ТЕБЯ НИКТО НЕ ВИДЕЛ",
+    "ЭТА ПЛЁНКА БЫЛА НАЙДЕНА В СТЕНЕ",
+    "ЕСЛИ ТЫ ЧИТАЕШЬ ЭТО — ПЛЁНКА ДО СИХ ПОР ПИШЕТ",
+    "ПЕРЕМОТКА НЕ РАБОТАЕТ. НАЗАД ПУТИ НЕТ"
+  ];
+  var el = $("#tape-text");
+  var idx = 0;
+  setInterval(function () {
+    idx = (idx + 1) % TEXTS.length;
+    el.textContent = TEXTS[idx];
+    if (el.animate) {
+      el.animate(
+        [{ opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)" }],
+        { duration: 1200, easing: "ease" }
+      );
+    }
+  }, 9000);
+})();
+
+/* ============ ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ============ */
+(function () {
+  var els = document.querySelectorAll("[data-reveal]");
+  if (!("IntersectionObserver" in window)) {
+    els.forEach(function (el) { el.classList.add("revealed"); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        en.target.classList.add("revealed");
+        io.unobserve(en.target);
+      }
+    });
+  }, { rootMargin: "0px 0px -80px 0px" });
+  els.forEach(function (el) { io.observe(el); });
+})();
+
+/* ============ ЗАПРЕТНАЯ БИБЛИОТЕКА: КНИГИ ============ */
+var REQUIRED_TEXT = "Чтобы увидеть записи, попросите разрешение у владельца книги.";
+
+var BOOKS = [
+  {
+    id: "angelic",
+    icon: "feather",
+    title: "АНГЕЛЬСКАЯ КНИГА",
+    subtitle: "том I // светлые записи",
+    desc: "Переплетена из облаков и чужих обещаний. Пахнет библиотечной пылью и рассветом.",
+    cover: "linear-gradient(160deg, #efe6cb 0%, #e2d5ae 55%, #cfc08e 100%)",
+    ornament: "#b8922e",
+    ink: "#6d5a26",
+    glow: "rgba(233, 223, 194, 0.55)",
+    pages: [
+      { lines: [REQUIRED_TEXT] },
+      { lines: ["Печать поставлена светлым почерком.", "Ключ хранится у владельца. Не у тебя."] },
+      { lines: ["Остальные страницы скрыты от чужих глаз."] },
+      { lines: ["Верни книгу на полку.", "Она вернётся сама."] }
+    ]
+  },
+  {
+    id: "demonic",
+    icon: "flame",
+    title: "ДЕМОНИЧЕСКАЯ КНИГА",
+    subtitle: "том II // тёмные записи",
+    desc: "Кожа обложки теплее, чем должна быть. Шепчет, когда читаешь чужие письма.",
+    cover: "linear-gradient(160deg, #241812 0%, #171010 55%, #0d0808 100%)",
+    ornament: "#b3121f",
+    ink: "#c86a4a",
+    glow: "rgba(179, 18, 31, 0.5)",
+    pages: [
+      { lines: [REQUIRED_TEXT] },
+      { lines: ["Подпись кровью здесь недействительна.", "Проси владельца. Только владельца."] },
+      { lines: ["Имена на этих страницах выжжены."] },
+      { lines: ["Не читай стоя.", "Не читай дважды."] }
+    ]
+  },
+  {
+    id: "bloody",
+    icon: "droplets",
+    title: "КРОВАВАЯ КНИГА",
+    subtitle: "том III // изъятые записи",
+    desc: "Найдена в стене Уровня 0. Переплёт до сих пор не высох до конца.",
+    cover: "linear-gradient(160deg, #4a1010 0%, #350b0b 55%, #210606 100%)",
+    ornament: "#d90429",
+    ink: "#e08a7a",
+    glow: "rgba(217, 4, 41, 0.55)",
+    pages: [
+      { lines: [REQUIRED_TEXT], stains: true },
+      { lines: ["Чернила ещё влажные.", "Записи изъяты владельцем."], stains: true },
+      { lines: ["Пятна на полях — не чернила."] },
+      { lines: ["Верни книгу.", "Тихо."] }
+    ]
+  }
+];
+
+var bookState = { book: null, spread: 0 };
+var modalRoot = $("#modal-root");
+
+function bookById(id) {
+  for (var i = 0; i < BOOKS.length; i++) {
+    if (BOOKS[i].id === id) return BOOKS[i];
+  }
+  return null;
+}
+
+function openBook(id) {
+  var b = bookById(id);
+  if (!b) return;
+  bookState.book = b;
+  bookState.spread = 0;
+  document.body.classList.add("modal-open");
+  renderCover();
+}
+
+function closeModal() {
+  bookState.book = null;
+  modalRoot.innerHTML = "";
+  document.body.classList.remove("modal-open");
+}
+
+/* --- Стадия 1: обложка --- */
+function renderCover() {
+  var b = bookState.book;
+  modalRoot.innerHTML =
+    '<div class="modal" id="modal">' +
+      '<div class="modal-panel">' +
+        '<button class="modal-close" id="m-close">' + icon("x", "i14") + " ESC</button>" +
+        '<div class="cover-stage" role="dialog" aria-modal="true" aria-label="Обложка: ' + esc(b.title) + '">' +
+          '<div class="cover-wrap">' +
+            '<div class="cover-stack">' +
+              '<div class="cover-edge" aria-hidden="true"></div>' +
+              '<div class="cover-art" style="--cover:' + b.cover + ";--ornament:" + b.ornament + ";--glow:" + b.glow + '">' +
+                '<div class="cover-leather" aria-hidden="true"></div>' +
+                '<div class="cover-frame f1" aria-hidden="true"></div>' +
+                '<div class="cover-frame f2" aria-hidden="true"></div>' +
+                '<span class="corner c1" aria-hidden="true"></span>' +
+                '<span class="corner c2" aria-hidden="true"></span>' +
+                '<span class="corner c3" aria-hidden="true"></span>' +
+                '<span class="corner c4" aria-hidden="true"></span>' +
+                '<div class="medallion"><div class="medallion-inner">' + icon(b.icon, "i36") + "</div></div>" +
+                '<div class="cover-caption"><p class="cover-title">' + b.title + '</p><div class="cover-div"></div></div>' +
+              "</div>" +
+            "</div>" +
+            '<p class="cover-sub">' + b.subtitle + "</p>" +
+            '<p class="cover-desc">' + b.desc + "</p>" +
+          "</div>" +
+          '<div class="cover-actions">' +
+            '<button class="btn-primary" id="m-open">ОТКРЫТЬ КНИГУ</button>' +
+            '<button class="btn-line" id="m-back">НА ПОЛКУ</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+    "</div>";
+
+  $("#m-open").addEventListener("click", function () { renderRead(true); });
+  $("#m-back").addEventListener("click", closeModal);
+  $("#m-close").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", function (e) {
+    if (e.target === e.currentTarget) closeModal();
+  });
+}
+
+/* --- Стадия 2: чтение (разворот со страницами) --- */
+function renderRead(firstOpen) {
+  var b = bookState.book;
+  var spreads = [];
+  for (var i = 0; i < b.pages.length; i += 2) spreads.push(b.pages.slice(i, i + 2));
+  var idx = Math.min(bookState.spread, spreads.length - 1);
+  var spread = spreads[idx];
+
+  function pageHtml(page, side) {
+    var lines = "";
+    for (var li = 0; li < page.lines.length; li++) {
+      var line = page.lines[li];
+      var isReq = li === 0 && line === REQUIRED_TEXT;
+      lines += '<p class="page-line' + (isReq ? " req" : "") + '" style="animation-delay:' +
+        (0.25 + li * 0.35).toFixed(2) + 's;color:' + b.ink + '">' + line + "</p>";
+    }
+    var lock = page.lines[0] === REQUIRED_TEXT
+      ? '<div class="page-lock" style="color:' + b.ink + '">' + icon("lock", "i14") + " ДОСТУП ОГРАНИЧЕН</div>"
+      : "";
+    return '<div class="page ' + (side === 0 ? "pl" : "pr") + '" aria-live="polite">' +
+      '<div class="page-lines" aria-hidden="true"></div>' +
+      (page.stains ? '<div class="page-stains" aria-hidden="true"></div>' : "") +
+      '<div class="page-gutter ' + (side === 0 ? "g-r" : "g-l") + '" aria-hidden="true"></div>' +
+      '<div class="page-content">' + lines + lock + "</div>" +
+      '<p class="page-num">— ' + (idx * 2 + side + 1) + " —</p>" +
+      "</div>";
+  }
+
+  modalRoot.innerHTML =
+    '<div class="modal" id="modal">' +
+      '<div class="modal-panel">' +
+        '<button class="modal-close" id="m-close">' + icon("x", "i14") + " ESC</button>" +
+        '<div class="read-stage" role="dialog" aria-modal="true" aria-label="Чтение: ' + esc(b.title) + '">' +
+          '<div class="read-head">' +
+            '<p class="read-title" style="color:' + b.ornament + '">' + b.title + "</p>" +
+            '<p class="read-pages">ЛИСТ ' + (idx * 2 + 1) + "–" + Math.min(idx * 2 + 2, b.pages.length) + " / " + b.pages.length + "</p>" +
+          "</div>" +
+          '<div class="spread-wrap">' +
+            '<div class="spread">' + pageHtml(spread[0], 0) + (spread[1] ? pageHtml(spread[1], 1) : "") + "</div>" +
+            '<div class="flip-lid' + (firstOpen ? "" : " short") + '" style="background:' + b.cover + '" aria-hidden="true">' +
+              '<div class="flip-border" style="border-color:' + b.ornament + '"></div>' +
+              '<div class="flip-icon">' + icon(b.icon, "i40") + "</div>" +
+            "</div>" +
+          "</div>" +
+          '<div class="read-nav">' +
+            '<button class="btn-line gold" id="p-prev"' + (idx === 0 ? " disabled" : "") + ">" + icon("chevl", "i16") + " НАЗАД</button>" +
+            '<button class="btn-line gold" id="p-next"' + (idx >= spreads.length - 1 ? " disabled" : "") + ">ВПЕРЁД " + icon("chevr", "i16") + "</button>" +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+    "</div>";
+
+  var lid = $(".flip-lid", modalRoot);
+  if (lid) {
+    lid.addEventListener("animationend", function () {
+      if (lid.parentNode) lid.parentNode.removeChild(lid);
+    });
+  }
+  $("#p-prev").addEventListener("click", function () { turnPage(-1); });
+  $("#p-next").addEventListener("click", function () { turnPage(1); });
+  $("#m-close").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", function (e) {
+    if (e.target === e.currentTarget) closeModal();
+  });
+}
+
+function turnPage(dir) {
+  bookState.spread = Math.max(0, bookState.spread + dir);
+  renderRead(false);
+}
+
+document.querySelectorAll(".live-book").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    openBook(btn.getAttribute("data-book"));
+  });
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && bookState.book) closeModal();
+});
+
+/* ============ ДНЕВНИК СНОВИДЕНИЙ (localStorage) ============ */
+(function () {
+  var LS_KEY = "dreamums_journal_v1";
+  var SEED_PHRASES = ["слушай...", "уже почти", "не просыпайся"];
+  var SEED = [
+    {
+      id: "s1",
+      callsign: "странник_1991",
+      level: "УРОВЕНЬ 0 // ПУСТОТА",
+      message: "обои стали тёплыми. за стеной кто-то дышит в моём ритме. я иду к выходу, но, кажется, выход идёт ко мне...",
+      createdAt: "2026-10-20T21:14:00.000Z"
+    },
+    {
+      id: "s2",
+      callsign: "ночной_архивариус",
+      level: "СОН // МЕСТО НЕИЗВЕСТНО",
+      message: "нашёл на полке книгу без названия. открыл — а там моя фамилия, выведенная чужим почерком. закрыл. надо было не открывать.",
+      createdAt: "2026-10-22T03:47:00.000Z"
+    },
+    {
+      id: "s3",
+      callsign: "мокрые_тапки",
+      level: "УРОВЕНЬ 37 // БАССЕЙНЫ",
+      message: "вода светится, если плакать рядом. проверял дважды. на бортике записка: «не проваливайся здесь».",
+      createdAt: "2026-10-24T19:03:00.000Z"
+    }
+  ];
+
+  function loadEntries() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (raw === null) {
+        localStorage.setItem(LS_KEY, JSON.stringify(SEED));
+        return SEED.slice();
+      }
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveEntries(list) {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(list));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function formatDate(iso) {
+    var d = new Date(iso);
+    function p(n) { return String(n).padStart(2, "0"); }
+    return p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear() + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  function renderEntries() {
+    var list = $("#j-entries");
+    var entries = loadEntries();
+    if (!entries.length) {
+      list.innerHTML = '<li class="j-empty">' + icon("folder") +
+        "<p>АРХИВ ПУСТ. ЛИБО ТЫ ПЕРВЫЙ,<br>ЛИБО ЗАПИСИ УМЕЮТ ИСЧЕЗАТЬ.</p></li>";
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < entries.length; i++) {
+      var en = entries[i];
+      html += '<li class="paper-note" style="--rot:' + ((i % 3) - 1) + 'deg">' +
+        '<div class="note-head"><span class="note-callsign">' + esc(en.callsign) +
+        '</span><span class="note-level">' + esc(en.level) + "</span></div>" +
+        '<p class="note-text">«' + esc(en.message) + "»</p>" +
+        '<p class="note-meta">' + formatDate(en.createdAt) + " // " + SEED_PHRASES[i % SEED_PHRASES.length] + "</p>" +
+        "</li>";
+    }
+    list.innerHTML = html;
+  }
+
+  var form = $("#j-form");
+  var cs = $("#j-callsign");
+  var lv = $("#j-level");
+  var msg = $("#j-message");
+  var counter = $("#j-counter");
+  var status = $("#j-status");
+
+  msg.addEventListener("input", function () {
+    if (msg.value.length > 500) msg.value = msg.value.slice(0, 500);
+    counter.textContent = msg.value.length + "/500";
+    counter.classList.toggle("over", msg.value.length > 480);
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!cs.value.trim() || !msg.value.trim()) {
+      status.className = "j-status err a-in";
+      status.textContent = "✕ ПОЗЫВНОЙ И СООБЩЕНИЕ ОБЯЗАТЕЛЬНЫ";
+      return;
+    }
+    var entries = loadEntries();
+    entries.unshift({
+      id: "e" + Date.now().toString(36),
+      callsign: cs.value.trim().slice(0, 40),
+      level: lv.value,
+      message: msg.value.trim().slice(0, 500),
+      createdAt: new Date().toISOString()
+    });
+    if (!saveEntries(entries)) {
+      status.className = "j-status err a-in";
+      status.textContent = "✕ ПЕРЕДАЧА ПРЕРВАНА";
+      return;
+    }
+    msg.value = "";
+    counter.textContent = "0/500";
+    counter.classList.remove("over");
+    status.className = "j-status ok a-in";
+    status.textContent = "✓ ЗАПИСЬ ВНЕСЕНА В АРХИВ. АРХИВАРИУС ДОВОЛЕН.";
+    renderEntries();
+  });
+
+  renderEntries();
+})();
+</script>
+</body>
+</html>
