@@ -1280,6 +1280,106 @@ body.preloading, body.modal-open { overflow: hidden; }
   .spin, .animate-rec { animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ================= MINECRAFT-ХОДОК (skin.png) ================= */
+#mc-walker {
+  position: fixed;
+  bottom: 2px;
+  left: 0;
+  z-index: 60;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.mc-shadow {
+  position: absolute;
+  bottom: -3px;
+  width: 56px;
+  height: 9px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), transparent 72%);
+}
+.mc-dir { position: absolute; bottom: 0; left: 0; }
+.mc-jump { position: absolute; bottom: 0; left: 0; }
+.mc-jump.jumping { animation: mc-jump-kf 0.62s cubic-bezier(0.3, 0.6, 0.4, 1) 1; }
+.mc-char {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: mc-bob 0.46s ease-in-out infinite;
+  filter: drop-shadow(0 0 2px rgba(255, 249, 219, 0.4)) drop-shadow(0 0 6px rgba(255, 249, 219, 0.18));
+}
+.mc-char:hover .mc-face { filter: brightness(1.1) saturate(1.05); }
+.mc-limb { position: absolute; transform-origin: 50% 0; }
+.mc-face {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+.mc-face.ov { position: absolute; inset: 0; }
+.sw-a     { animation: mc-swing 0.9s ease-in-out infinite; }
+.sw-b     { animation: mc-swing 0.9s ease-in-out infinite; animation-delay: -0.45s; }
+.sw-a-leg { animation: mc-swing-legs 0.9s ease-in-out infinite; }
+.sw-b-leg { animation: mc-swing-legs 0.9s ease-in-out infinite; animation-delay: -0.45s; }
+.mc-bubble {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 6px 12px 7px;
+  background: var(--dc-cream);
+  color: #3a2a20;
+  font-family: var(--font-hand-dream);
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  border: 1px solid rgba(58, 42, 32, 0.4);
+  border-radius: 2px;
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+.mc-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: var(--dc-cream);
+}
+.mc-bubble.show { opacity: 1; }
+@media (max-width: 639px) {
+  .mc-bubble { font-size: 13px; padding: 5px 10px 6px; }
+}
+@keyframes mc-swing {
+  0%, 100% { transform: rotate(24deg); }
+  50% { transform: rotate(-24deg); }
+}
+@keyframes mc-swing-legs {
+  0%, 100% { transform: rotate(-28deg); }
+  50% { transform: rotate(28deg); }
+}
+@keyframes mc-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+@keyframes mc-jump-kf {
+  0% { transform: translateY(0); }
+  18% { transform: translateY(-5px); }
+  45% { transform: translateY(-26px); }
+  72% { transform: translateY(-4px); }
+  84% { transform: translateY(0); }
+  90% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-char, .sw-a, .sw-b, .sw-a-leg, .sw-b-leg, .mc-jump.jumping { animation: none !important; }
+}
 </style>
 </head>
 <body class="preloading grain scanlines">
@@ -1561,6 +1661,9 @@ body.preloading, body.modal-open { overflow: hidden; }
   </div>
   <div class="footer-hole" aria-hidden="true"></div>
 </footer>
+
+<!-- ===== MINECRAFT-ХОДОК (скин из skin.png, идёт по нижнему краю экрана) ===== -->
+<div id="mc-walker" aria-hidden="true"></div>
 
 <script>
 "use strict";
@@ -2125,6 +2228,207 @@ document.addEventListener("keydown", function (e) {
   });
 
   renderEntries();
+})();
+
+/* ============ MINECRAFT-ХОДОК (skin.png идёт по нижнему краю экрана) ============ */
+(function () {
+  var host = $("#mc-walker");
+  if (!host) return;
+
+  /* лицевые грани стандартного скина 64x64: [x, y, w, h] в текстурных пикселях */
+  var PARTS = {
+    head: [8, 8, 8, 8], hat: [40, 8, 8, 8],
+    body: [20, 20, 8, 12], bodyov: [20, 36, 8, 12],
+    armR: [44, 20, 4, 12], armRov: [44, 36, 4, 12],
+    armL: [36, 52, 4, 12], armLov: [52, 52, 4, 12],
+    legR: [4, 20, 4, 12], legRov: [4, 36, 4, 12],
+    legL: [20, 52, 4, 12], legLov: [4, 52, 4, 12]
+  };
+
+  var PHRASES = [
+    "=)", "я просто иду…", "не наступай на ковёр", "здесь всегда светло",
+    "это не лор", "ты слышишь гул?", "у меня есть припасы. не дам", "сон продолжается"
+  ];
+
+  var img = null, unit = 1, u = 3, charW = 0, charH = 0;
+  var dir = 1, x = -160, speed = 55;
+  var walking = false, lastTs = 0, bubbleTimer = null, lastMobile = null;
+
+  function el(cls) { var d = document.createElement("div"); d.className = cls; return d; }
+
+  function face(part, isOv) {
+    var f = el("mc-face" + (isOv ? " ov" : ""));
+    f.style.backgroundImage = 'url("' + img.src + '")';
+    f.style.backgroundSize = img.naturalWidth * u + "px " + img.naturalHeight * u + "px";
+    f.style.backgroundPosition = -part[0] * unit * u + "px " + -part[1] * unit * u + "px";
+    return f;
+  }
+
+  function limb(part, ov, left, top, w, h, cls) {
+    var l = el("mc-limb " + cls);
+    l.style.left = left * u + "px";
+    l.style.top = top * u + "px";
+    l.style.width = w * u + "px";
+    l.style.height = h * u + "px";
+    l.appendChild(face(part));
+    if (ov) l.appendChild(face(ov, true));
+    return l;
+  }
+
+  function build(srcImg) {
+    img = srcImg;
+    unit = img.naturalWidth / 64; /* поддержка HD-скинов 128+ */
+    lastMobile = window.innerWidth < 640;
+    u = lastMobile ? 2.4 : 3;
+    speed = lastMobile ? 42 : 55;
+    charW = 16 * unit * u;  /* 4+8+4 текстурных пикселя в ширину */
+    charH = 32 * unit * u;  /* 8+12+12 в высоту */
+
+    host.innerHTML = "";
+    host.style.width = charW + "px";
+    host.style.height = charH + 4 + "px";
+
+    var dirBox = el("mc-dir");
+
+    var shadow = el("mc-shadow");
+    shadow.style.width = charW * 1.15 + "px";
+    shadow.style.left = charW / 2 + "px";
+    dirBox.appendChild(shadow);
+
+    var jumpBox = el("mc-jump");
+    var ch = el("mc-char");
+    ch.style.width = charW + "px";   /* явный хитбокс для клика */
+    ch.style.height = charH + "px";
+
+    var legacy = img.naturalHeight === img.naturalWidth / 2; /* старые скины 64x32 */
+    var armLp = legacy ? PARTS.armR : PARTS.armL;
+    var legLp = legacy ? PARTS.legR : PARTS.legL;
+    var ovArmR = legacy ? null : PARTS.armRov;
+    var ovArmL = legacy ? null : PARTS.armLov;
+    var ovLegR = legacy ? null : PARTS.legRov;
+    var ovLegL = legacy ? null : PARTS.legLov;
+    var bodyovP = legacy ? null : PARTS.bodyov;
+
+    /* порядок = порядок отрисовки: правая рука за телом, левая поверх */
+    ch.appendChild(limb(PARTS.legR, ovLegR, 4, 20, 4, 12, "sw-b-leg"));
+    ch.appendChild(limb(legLp, ovLegL, 8, 20, 4, 12, "sw-a-leg"));
+    ch.appendChild(limb(PARTS.armR, ovArmR, 0, 8, 4, 12, "sw-a"));
+    ch.appendChild(limb(PARTS.body, bodyovP, 4, 8, 8, 12, ""));
+    ch.appendChild(limb(armLp, ovArmL, 12, 8, 4, 12, "sw-b"));
+    ch.appendChild(limb(PARTS.head, PARTS.hat, 4, 0, 8, 8, ""));
+
+    jumpBox.appendChild(ch);
+    dirBox.appendChild(jumpBox);
+    host.appendChild(dirBox);
+
+    var bubble = el("mc-bubble");
+    bubble.style.left = charW / 2 + "px";
+    bubble.style.bottom = charH + 12 + "px";
+    host.appendChild(bubble);
+  }
+
+  function render() {
+    var d = host.querySelector(".mc-dir");
+    if (d) d.style.transform = "translateX(" + x + "px)" + (dir < 0 ? " scaleX(-1)" : "");
+    /* облако с репликой следует за персонажем, не выезжая за края экрана */
+    var b = host.querySelector(".mc-bubble");
+    if (b) {
+      var bx = Math.max(85, Math.min(x + charW / 2, window.innerWidth - 85));
+      b.style.left = bx + "px";
+    }
+  }
+
+  function tick(ts) {
+    if (!lastTs) lastTs = ts;
+    var dt = Math.min((ts - lastTs) / 1000, 0.1);
+    lastTs = ts;
+    if (walking) {
+      x += dir * speed * dt;
+      if ((dir > 0 && x > window.innerWidth + 30) || (dir < 0 && x < -charW - 30)) {
+        walking = false;
+        setTimeout(function () {
+          dir = -dir;
+          x = dir > 0 ? -charW - 20 : window.innerWidth + 20;
+          walking = true;
+        }, 2600 + Math.random() * 3800);
+      }
+    }
+    render();
+    requestAnimationFrame(tick);
+  }
+
+  /* запасной скин, если skin.png не найден или не похож на скин Minecraft */
+  function placeholderSkin() {
+    var c = document.createElement("canvas");
+    c.width = 64; c.height = 64;
+    var g = c.getContext("2d");
+    function r(px, py, w, h, col) { g.fillStyle = col; g.fillRect(px, py, w, h); }
+    r(8, 8, 8, 8, "#e8c9a8");                              /* лицо */
+    r(8, 8, 8, 2, "#4a3220");                              /* чёлка */
+    r(10, 11, 1, 1, "#26233a"); r(13, 11, 1, 1, "#26233a"); /* глаза */
+    r(9, 13, 1, 1, "#f2a7c3"); r(14, 13, 1, 1, "#f2a7c3");  /* щёки */
+    r(11, 14, 2, 1, "#b8785a");                             /* рот */
+    r(20, 20, 8, 12, "#f4c9e4"); r(20, 30, 8, 2, "#e2a9cf"); /* свитер */
+    r(44, 20, 4, 12, "#f4c9e4"); r(44, 28, 4, 4, "#e8c9a8"); /* правая рука */
+    r(36, 52, 4, 12, "#f4c9e4"); r(36, 60, 4, 4, "#e8c9a8"); /* левая рука */
+    r(4, 20, 4, 12, "#3a4a6b"); r(4, 30, 4, 2, "#241a12");   /* правая нога */
+    r(20, 52, 4, 12, "#3a4a6b"); r(20, 62, 4, 2, "#241a12"); /* левая нога */
+    return c.toDataURL("image/png");
+  }
+
+  function start(srcImg) {
+    build(srcImg);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      x = Math.max(20, window.innerWidth - charW - 24); /* стоит справа, без ходьбы */
+      render();
+      return;
+    }
+    walking = true;
+    requestAnimationFrame(tick);
+  }
+
+  function startPlaceholder() {
+    var ph = new Image();
+    ph.onload = function () { start(ph); };
+    ph.src = placeholderSkin();
+  }
+
+  var probe = new Image();
+  probe.onload = function () {
+    var ok = probe.naturalWidth >= 64 &&
+      (probe.naturalHeight === probe.naturalWidth || probe.naturalHeight === probe.naturalWidth / 2);
+    if (ok) start(probe);
+    else {
+      console.info("ДРИМРУМС: skin.png не похож на скин Minecraft (нужен 64x64 или 64x32) — включён запасной скин");
+      startPlaceholder();
+    }
+  };
+  probe.onerror = function () {
+    console.info("ДРИМРУМС: skin.png не найден рядом с index.html — включён запасной скин");
+    startPlaceholder();
+  };
+  probe.src = "skin.png";
+
+  host.addEventListener("click", function () {
+    var jb = host.querySelector(".mc-jump");
+    var bubble = host.querySelector(".mc-bubble");
+    if (jb) {
+      jb.classList.remove("jumping");
+      void jb.offsetWidth; /* перезапуск анимации прыжка */
+      jb.classList.add("jumping");
+    }
+    if (bubble) {
+      bubble.textContent = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+      bubble.classList.add("show");
+      clearTimeout(bubbleTimer);
+      bubbleTimer = setTimeout(function () { bubble.classList.remove("show"); }, 2400);
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (!img) return;
+    if ((window.innerWidth < 640) !== lastMobile) build(img);
+  });
 })();
 </script>
 </body>
