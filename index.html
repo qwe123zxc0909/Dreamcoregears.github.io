@@ -1203,6 +1203,73 @@ body.preloading, body.modal-open { overflow: hidden; }
 .j-empty .ic { width: 32px; height: 32px; color: var(--faint); margin-bottom: 16px; }
 .j-empty p { font-size: 12px; line-height: 1.625; }
 
+/* ================= ЗАПЕЧАТАННЫЙ РАЗДЕЛ (блюр + замок) ================= */
+/* Применяется к РАЗДЕЛ 02 // СВЯЗЬ — контент под замком владельца. */
+.section-locked { position: relative; }
+.section-locked .wrap {
+  filter: blur(7px) saturate(0.85);
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.5s ease, opacity 0.5s ease;
+}
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 32px 24px;
+  text-align: center;
+  pointer-events: none;
+}
+.lock-medallion {
+  width: 104px;
+  height: 104px;
+  border: 2px solid var(--br-wall);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--br-wall);
+  background: rgba(12, 10, 6, 0.78);
+  box-shadow:
+    0 0 38px rgba(200, 178, 95, 0.45),
+    inset 0 0 20px rgba(200, 178, 95, 0.2);
+  animation: soft-pulse 3.2s ease-in-out infinite;
+}
+.lock-medallion .ic { width: 44px; height: 44px; }
+.lock-title {
+  font-family: var(--font-display-pixel);
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  color: var(--br-wall);
+  text-shadow: 0 0 18px rgba(200, 178, 95, 0.55);
+}
+.lock-sub {
+  font-family: var(--font-hand-dream);
+  font-size: 20px;
+  line-height: 1.4;
+  color: var(--muted);
+  max-width: 28rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+.lock-divider {
+  width: 64px;
+  height: 2px;
+  background: var(--br-wall);
+  opacity: 0.6;
+}
+@media (min-width: 640px) {
+  .lock-title { font-size: 15px; }
+  .lock-sub { font-size: 22px; }
+  .lock-medallion { width: 116px; height: 116px; }
+  .lock-medallion .ic { width: 48px; height: 48px; }
+}
+
 /* ================= ФУТЕР ================= */
 .footer {
   position: relative;
@@ -1579,7 +1646,16 @@ body.preloading, body.modal-open { overflow: hidden; }
 </div>
 
 <!-- ===== ДНЕВНИК СНОВИДЕНИЙ ===== -->
-<section id="journal" class="sec" aria-label="Дневник сновидений">
+<section id="journal" class="sec section-locked" aria-label="Дневник сновидений">
+  <!-- Замок владельца: контент раздела запечатан -->
+  <div class="lock-overlay" aria-hidden="true">
+    <div class="lock-medallion">
+      <svg class="ic"><use href="#i-lock"/></svg>
+    </div>
+    <p class="lock-title">ДОСТУП ОГРАНИЧЕН</p>
+    <div class="lock-divider"></div>
+    <p class="lock-sub">РАЗДЕЛ ЗАПЕЧАТАН ВЛАДЕЛЬЦЕМ.<br>Чтобы увидеть записи, попросите разрешение у владельца.</p>
+  </div>
   <div class="wrap">
     <div class="sec-head" data-reveal>
       <p class="sec-eyebrow">РАЗДЕЛ 02 // СВЯЗЬ</p>
@@ -1721,20 +1797,9 @@ function esc(s) {
   setTimeout(tick, 350);
 })();
 
-/* ============ СЛУЧАЙНЫЕ СБОИ СИГНАЛА ============ */
-(function () {
-  function schedule() {
-    setTimeout(function () {
-      var d = document.createElement("div");
-      d.className = "blackout-flash";
-      d.setAttribute("aria-hidden", "true");
-      document.body.appendChild(d);
-      setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 700);
-      schedule();
-    }, 14000 + Math.random() * 24000);
-  }
-  schedule();
-})();
+/* ============ СЛУЧАЙНЫЕ СБОИ СИГНАЛА (отключено: больше не мигает чёрным) ============ */
+/* Блэкаут-флэши убраны по запросу — оставшаяся VHS-эстетика (зерно, сканлайны,
+   дрожание ламп, виньетка) сохранена для атмосферы без резких вспышек. */
 
 /* ============ HUD: ТАЙМКОД, РАССУДОК, ШЁПОТЫ ============ */
 (function () {
